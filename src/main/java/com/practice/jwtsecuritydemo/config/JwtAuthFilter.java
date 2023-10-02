@@ -1,5 +1,6 @@
 package com.practice.jwtsecuritydemo.config;
 
+import com.practice.jwtsecuritydemo.exceptions.InvalidJwtTokenException;
 import com.practice.jwtsecuritydemo.repo.TokenRepo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -55,6 +56,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+            else {
+                throw new InvalidJwtTokenException("Invalid token!");
             }
         }
         filterChain.doFilter(request, response);

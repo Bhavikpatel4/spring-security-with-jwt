@@ -1,5 +1,6 @@
 package com.practice.jwtsecuritydemo.dto;
 
 public enum TokenType {
-    BEARER
+    BEARER,
+    REFRESH_TOKEN
 }

@@ -1,5 +1,6 @@
 package com.practice.jwtsecuritydemo;
 
+import com.practice.jwtsecuritydemo.auth.AuthenticationResponse;
 import com.practice.jwtsecuritydemo.auth.AuthenticationService;
 import com.practice.jwtsecuritydemo.auth.RegisterRequest;
 import com.practice.jwtsecuritydemo.dto.Role;
@@ -27,7 +28,9 @@ public class JwtSecurityDemoApplication {
 					.password("password")
 					.role(Role.ADMIN)
 					.build();
-			System.out.println("Admin Token : " + authenticationService.register(admin).getToken());
+			AuthenticationResponse adminRes = authenticationService.register(admin);
+			System.out.println("Admin Token : " + adminRes.getAccessToken());
+			System.out.println("Admin Refresh Token : " + adminRes.getRefreshToken());
 
 			var manager = RegisterRequest.builder()
 					.firstname("Manager")
@@ -36,7 +39,9 @@ public class JwtSecurityDemoApplication {
 					.password("password")
 					.role(Role.MANAGER)
 					.build();
-			System.out.println("Manager Token : " + authenticationService.register(manager).getToken());
+			AuthenticationResponse managerRes = authenticationService.register(manager);
+			System.out.println("Manager Token : " + managerRes.getAccessToken());
+			System.out.println("Manager Refresh Token : " + managerRes.getRefreshToken());
 		};
 	}
 

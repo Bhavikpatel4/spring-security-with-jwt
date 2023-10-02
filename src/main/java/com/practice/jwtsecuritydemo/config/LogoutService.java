@@ -1,6 +1,7 @@
 package com.practice.jwtsecuritydemo.config;
 
 import com.practice.jwtsecuritydemo.repo.TokenRepo;
+import com.practice.jwtsecuritydemo.repo.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 public class LogoutService implements LogoutHandler {
 
     private final TokenRepo tokenRepo;
+    private final JwtService jwtService;
+    private final UserRepo userRepo;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -24,12 +27,16 @@ public class LogoutService implements LogoutHandler {
         }
 
         final String jwt = authHeader.substring(7);
+        final String username = jwtService.extractUsername(jwt);
 
-        var token = tokenRepo.findByToken(jwt).orElse(null);
-        if(token != null) {
-            token.setRevoked(true);
-            token.setExpired(true);
-            tokenRepo.save(token);
+        if(username != null) {
+            var user = userRepo.findByUsername(username).orElseThrow();
+            var validTokens = tokenRepo.findAllValidTokensByUser(user.getId());
+            validTokens.forEach(token -> {
+                token.setRevoked(true);
+                token.setExpired(true);
+            });
+            tokenRepo.saveAll(validTokens);
         }
     }
 }
